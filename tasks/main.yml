@@ -1,0 +1,14 @@
+---
+# tasks file for idempotent_iptables
+
+- name: deploy iptables wrapper and rules file
+  copy: src="{{item}}" dest="/tmp/{{item}}"
+  with_items:
+   - idempotent_iptables.py
+   - "{{idempotent_iptables_rules_file}}"
+
+- name: deploy rules to target host
+  shell: "python idempotent_iptables -f {{idempotent_iptables_rules_file}} -q {{idempotent_iptables_quiet}} -d {{idempotent_iptables_duplicate}} -c {{idempotent_iptables_success_nochange}}"
+  args:
+    chdir: "/tmp"
+

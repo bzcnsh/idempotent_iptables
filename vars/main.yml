@@ -1,0 +1,6 @@
+---
+# vars file for idempotent_iptables
+idempotent_iptables_rules_file: iptables.rules
+idempotent_iptables_quiet: false
+idempotent_iptables_duplicate: false
+idempotent_iptables_success_nochange: true
