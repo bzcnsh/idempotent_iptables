@@ -10,8 +10,8 @@
 # raise error if rules duplicate in a chain
 #
 # exit codes:
-# 0: updated iptables without errors
-# others: something went wrong, including all rules are already in place
+# 0: updated iptables without errors, or when no change's applied and --nochange switch is true
+# others: something went wrong
 
 import sys
 import subprocess
