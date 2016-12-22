@@ -88,6 +88,7 @@ def main(rule_filename):
    print("read file")
    tables_new = parseIptablesSave(file.read())
    save_result = runCommand("iptables-save")
+   new_rule_count = 0
    print("iptables-save")
    tables_existing = parseIptablesSave(save_result['out'])
    for t in tables_new:
@@ -108,13 +109,15 @@ def main(rule_filename):
             pp.pprint(rule_content)
 
       rule_commands = map2list(map(lambda x: 'iptables -t '+t+' '+x, rules_to_add))
-      if len(rule_commands)==0:
-         print("all rules are already present")
-         if options['nochange']=='false':
-            sys.exit(2)
+      new_rule_count += len(rule_commands)
       rule_command_results = map2list(map(lambda x:runCommand(x), rule_commands))
       if len(rule_commands)>0:
          print("successfully updated iptables")
+
+   if new_rule_count==0:
+      print("all rules are already present, no rule has been added")
+      if options['nochange']=='false':
+         sys.exit(2)
 
    if options['duplicate']=='false':
       new_save_result = runCommand("iptables-save")
