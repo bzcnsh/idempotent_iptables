@@ -94,7 +94,7 @@ def main(rule_filename):
             rules_to_add.append(new_table['rules'][index])
             pp.pprint(rule_content)
 
-      rule_commands = map(lambda x: 'iptables -t '+t+' '+x, rules_to_add)
+      rule_commands = map2list(map(lambda x: 'iptables -t '+t+' '+x, rules_to_add))
       if len(rule_commands)==0:
          print("all rules are already present")
          if options['nochange']=='false':
