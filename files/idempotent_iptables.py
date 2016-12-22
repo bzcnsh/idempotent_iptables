@@ -123,10 +123,9 @@ def main(rule_filename):
       new_save_result = runCommand("iptables-save")
       new_tables_existing = parseIptablesSave(new_save_result['out'])
       for t in new_tables_existing:
-         rules = new_tables_existing[t]['content']
          l2 = []
-         for idx, rule in rules:
-            assert rule not in l2, "duplicate rules found in current iptables \"" + t + "\" table:\n" + new_tables_existing[t]['rules'][idx]
+         for idx, content in enumerate(new_tables_existing[t]['content']):
+            assert content not in l2, "duplicate rules found in current iptables \"" + t + "\" table:\n" + new_tables_existing[t]['rules'][idx]
             l2.append(rule)
 
 def usage():
