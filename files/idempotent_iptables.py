@@ -53,14 +53,27 @@ def parseIptablesSave(content):
       tables[lines[0]] = {"chains": chains, "rules": rules, "content": rules_content}
    return tables
 
+# sort matching conditions
+# remove comment
+# join sorted conditions so the resulted string is identical regardless of a constituent condition's postion in the original rule
 def fix_content(line):
    content = line[3:]
-   content = re.sub('[\"\']', '', content)
-   content = re.sub(" -m comment --comment .+?( -[a-zA-Z] |$)", fix_content2, content)
-   return content
-
-def fix_content2(m):
-   return m.group(1)
+   p = re.split("(\-\w[ |$])", " "+content+" ")
+   p = filter2list(filter(lambda x:not re.match('^ *$', x), p))
+   p = map2list(map(lambda x:x.rstrip(' ').lstrip(' '), p))
+   parts = []
+   part = ""
+   for i in range(0, len(p)):
+      if re.match("^\-\w$", p[i]):
+         if part!="":
+            parts.append(part)
+         part=p[i]
+      else:
+         part = part + ' ' + p[i]
+   parts.append(part)
+   parts = sorted(parts)
+   parts = filter2list(filter(lambda x:not x.startswith("-m comment"), parts))
+   return " ".join(parts)
 
 def map2list(input):
    output = list(input) if python_version>=3 else input
