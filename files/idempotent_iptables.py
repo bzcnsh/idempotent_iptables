@@ -126,7 +126,7 @@ def main(rule_filename):
          l2 = []
          for idx, content in enumerate(new_tables_existing[t]['content']):
             assert content not in l2, "duplicate rules found in current iptables \"" + t + "\" table:\n" + new_tables_existing[t]['rules'][idx]
-            l2.append(rule)
+            l2.append(content)
 
 def usage():
    print("python "+sys.argv[0] + " [-f|--filename] filename [-q|--quiet true/false] [-d|--duplicate true/false] [-c|nochange true/false]")
