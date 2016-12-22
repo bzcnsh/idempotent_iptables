@@ -17,6 +17,8 @@ import sys
 import subprocess
 import re
 import getopt
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
 
 def runCommand(command):
    if options['quiet']=='false':
@@ -32,7 +34,9 @@ def parseIptablesSave(content):
    # extract table blocks
    if isinstance(content, bytes):
       content = content.decode('utf-8')
-   table_blocks = re.split('\n\*', content)
+   table_blocks = re.split("(?:^|\n)\*", content)
+   table_blocks = filter2list(filter(lambda x: x.startswith("mangle\n") or x.startswith("raw\n") or
+                                               x.startswith("filter\n") or x.startswith("nat\n"), table_blocks))
    tables = {}
    for t in table_blocks:
       lines = t.split('\n')
@@ -41,9 +45,22 @@ def parseIptablesSave(content):
       chains = map2list(map(lambda x: x.split(" ")[0], chains))
       chains = map2list(map(lambda x: x[1:], chains))
       rules = filter2list(filter(lambda x:x.startswith("-"), lines))
-      rules_content = map2list(map(lambda x:x[2:], rules))
+      rules_content = map2list(map(lambda x:fix_content(x), rules))
+#      print("rules:")
+#      pp.pprint(rules)
+#      print("rules_content:")
+#      pp.pprint(rules_content)
       tables[lines[0]] = {"chains": chains, "rules": rules, "content": rules_content}
    return tables
+
+def fix_content(line):
+   content = line[3:]
+   content = re.sub('[\"\']', '', content)
+   content = re.sub(" -m comment --comment .+?( -[a-zA-Z] |$)", fix_content2, content)
+   return content
+
+def fix_content2(m):
+   return m.group(1)
 
 def map2list(input):
    output = list(input) if python_version>=3 else input
@@ -55,8 +72,10 @@ def filter2list(input):
 
 def main(rule_filename):
    file = open(rule_filename, 'r')
+   print("read file")
    tables_new = parseIptablesSave(file.read())
    save_result = runCommand("iptables-save")
+   print("iptables-save")
    tables_existing = parseIptablesSave(save_result['out'])
    for t in tables_new:
       if not t in tables_existing:
@@ -73,13 +92,16 @@ def main(rule_filename):
       for index, rule_content in enumerate(new_table['content']):
          if not rule_content in existing_table['content']:
             rules_to_add.append(new_table['rules'][index])
+            pp.pprint(rule_content)
 
       rule_commands = map(lambda x: 'iptables -t '+t+' '+x, rules_to_add)
       if len(rule_commands)==0:
-         print("all rules already present")
+         print("all rules are already present")
          if options['nochange']=='false':
             sys.exit(2)
       rule_command_results = map2list(map(lambda x:runCommand(x), rule_commands))
+      if len(rule_commands)>0:
+         print("successfully updated iptables")
 
    if options['duplicate']=='false':
       new_save_result = runCommand("iptables-save")
@@ -99,7 +121,7 @@ def usage():
    print("-c or --nochange true/false, when true, no change because all rules are already present is treated as a success, otherwise it's a failure. default is true")
 
 try:
-   opts, remainder = getopt.getopt(sys.argv[1:], 'f:qdc', ['file=', 'quiet=', 'duplicate=', 'nochange='])
+   opts, remainder = getopt.getopt(sys.argv[1:], 'f:q:d:c:', ['file=', 'quiet=', 'duplicate=', 'nochange='])
 except:
    usage()
    sys.exit(2)
@@ -108,11 +130,11 @@ for opt, arg in opts:
    if opt in ('-f', '--file'):
       options['file'] = arg
    elif opt in ('-q', '--quiet'):
-      options['quiet'] = arg
+      options['quiet'] = arg.lower()
    elif opt in ('-d', '--duplicate'):
-      options['duplicate'] = arg
+      options['duplicate'] = arg.lower()
    elif opt in ('-c', '--nochange'):
-      options['nochange'] = arg
+      options['nochange'] = arg.lower()
 
 if not 'file' in options:
    usage()

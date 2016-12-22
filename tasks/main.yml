@@ -4,11 +4,12 @@
 - name: deploy iptables wrapper and rules file
   copy: src="{{item['src']}}" dest="/tmp/{{item['dest']}}"
   with_items:
-   - {src: idempotent_iptables.py, dest: idempotent_iptables.py},
-   - {src: "{{idempotent_iptables_rules_file}}", dest: iptables.rules}"
+   - {src: idempotent_iptables.py, dest: idempotent_iptables.py}
+   - {src: "{{idempotent_iptables_rules_file}}", dest: iptables.rules}
 
 - name: deploy rules to target host
-  shell: "python idempotent_iptables -f iptables.rules -q {{idempotent_iptables_quiet}} -d {{idempotent_iptables_duplicate}} -c {{idempotent_iptables_success_nochange}}"
+  shell: "python idempotent_iptables.py -f iptables.rules -q {{idempotent_iptables_quiet}} -d {{idempotent_iptables_duplicate}} -c {{idempotent_iptables_success_nochange}}"
+  register: cmd_result
   args:
     chdir: "/tmp"
-
+  changed_when: cmd_result.stdout.find('successfully updated')!=-1
