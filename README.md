@@ -12,6 +12,7 @@ Role Variables
 --------------
 
 idempotent_iptables_rules_file: File contains rules to be added. Rules must be saved in file format matching output from iptables-save utility.
+
 # idempotent_iptables_quiet:  
 >  false(default): display commands issued  
 >  true:  display nothing  
@@ -19,8 +20,8 @@ idempotent_iptables_rules_file: File contains rules to be added. Rules must be s
 >  true: allow duplicate rules  
 >  false(default): raise exception when duplicate rules are detected  
 # idempotent_iptables_success_nochange:  
->  true(default): no need to change is considered success  
->  false: no need to change is considered faulure  
+>  true(default): nothing to change, because all rules are already in place, is considered success  
+>  false: nothing to change is considered faulure  
 
 Dependencies
 ------------
