@@ -11,8 +11,8 @@ python 2 or python 3, iptables-save
 Role Variables
 --------------
 
-idempotent_iptables_rules_file: File contains rules to be added. Rules must be saved in file format matching output from iptables-save utility.
-
+**idempotent_iptables_rules_file**:  
+File contains rules to be added. Rules must be saved in format matching output from iptables-save utility.
 **idempotent_iptables_quiet**:  
 >  false(default): display commands issued  
 >  true:  display nothing  
