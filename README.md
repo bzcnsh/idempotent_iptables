@@ -12,7 +12,7 @@ Role Variables
 --------------
 
 **idempotent_iptables_rules_file**:  
-File contains rules to be added. Rules must be saved in format matching output from iptables-save utility.  
+>  file contains rules to be added. format should match output from iptables-save utility.  
 **idempotent_iptables_quiet**:  
 >  false(default): display commands issued  
 >  true:  display nothing  
