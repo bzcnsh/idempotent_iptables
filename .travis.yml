@@ -29,11 +29,11 @@ script:
   - ansible-playbook tests/test.yml -i tests/inventory --connection=local --sudo
 
   # display iptables content
-  - iptables-save
+  - sudo iptables-save
 
   # verify result
   - >
-    iptables-save | grep tr00 | wc | grep -q "^ *4 " 
+    sudo iptables-save | grep tr00 | wc | grep -q "^ *4 " 
     && (echo 'iptables entry validated: pass' && exit 0)
     || (echo 'iptables entry validated: fail' && exit 1)
 
@@ -41,11 +41,11 @@ script:
   - ansible-playbook tests/test.yml -i tests/inventory --connection=local --sudo
 
   # display iptables content
-  - iptables-save
+  - sudo iptables-save
 
   # verify result
   - >
-    iptables-save | grep tr00 | wc | grep -q "^ *4 " 
+    sudo iptables-save | grep tr00 | wc | grep -q "^ *4 " 
     && (echo 'iptables entry validated: pass' && exit 0)
     || (echo 'iptables entry validated: fail' && exit 1)
 
