@@ -28,6 +28,9 @@ script:
   # run once
   - ansible-playbook tests/test.yml -i tests/inventory --connection=local --sudo
 
+  # display iptables content
+  - iptables-save
+
   # verify result
   - >
     iptables-save | grep tr00 | wc | grep -q "^ *4 " 
@@ -36,6 +39,9 @@ script:
 
   # run twice
   - ansible-playbook tests/test.yml -i tests/inventory --connection=local --sudo
+
+  # display iptables content
+  - iptables-save
 
   # verify result
   - >
