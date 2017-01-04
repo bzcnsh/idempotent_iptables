@@ -2,4 +2,4 @@
 - hosts: localhost
   remote_user: root
   roles:
-    - idempotent_iptables
+    - { role: idempotent_iptables, idempotent_iptables_rules_file: test_iptables.rules}

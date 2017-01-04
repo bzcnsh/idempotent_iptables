@@ -1,0 +1,10 @@
+*filter
+:INPUT ACCEPT [0:0]
+:INPUT_HOST_TRAFFIC - [0:0]
+-A INPUT -m addrtype --dst-type LOCAL -j INPUT_HOST_TRAFFIC -m comment --comment "tr001"
+-A INPUT -m addrtype --dst-type LOCAL -j INPUT_HOST_TRAFFIC -m comment --comment "tr001dup"
+-A INPUT_HOST_TRAFFIC -m state --state RELATED,ESTABLISHED -j ACCEPT -m comment --comment "tr002"
+-A INPUT_HOST_TRAFFIC -p icmp -j ACCEPT  -m comment --comment "tr003"
+-A INPUT_HOST_TRAFFIC -p tcp -m tcp --dport 22 -j ACCEPT  -m comment --comment "tr004"
+
+COMMIT
